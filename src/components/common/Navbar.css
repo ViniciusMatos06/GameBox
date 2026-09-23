@@ -1,0 +1,120 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 28px;
+  background: rgba(13, 13, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.navbar-brand svg {
+  color: var(--accent-light);
+}
+
+.navbar-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.navbar-link:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.navbar-link.active {
+  color: var(--accent-light);
+}
+
+.navbar-logout {
+  color: var(--text-muted);
+}
+
+.navbar-cta {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+  .navbar-brand span {
+    display: none;
+  }
+  .navbar-links .navbar-link span,
+  .navbar-links a:not(.navbar-cta) {
+    display: none;
+  }
+  .navbar-links {
+    gap: 8px;
+  }
+
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    justify-content: space-around;
+    background: rgba(13, 13, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .mobile-nav-link {
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 10px;
+  }
+  .mobile-nav-link.active {
+    color: var(--accent-light);
+    background: var(--surface-2);
+  }
+
+  body {
+    padding-bottom: 60px;
+  }
+}

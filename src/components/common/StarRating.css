@@ -1,0 +1,30 @@
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star-rating-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+}
+
+.star-rating-readonly .star-rating-btn {
+  cursor: default;
+}
+
+.star-rating-btn:not(:disabled):hover {
+  transform: scale(1.15);
+}
+
+.star-filled {
+  color: var(--accent-gold);
+}
+
+.star-empty {
+  color: var(--border);
+}

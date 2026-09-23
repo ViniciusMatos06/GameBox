@@ -1,0 +1,85 @@
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shine 1.4s ease infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shine {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.game-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-cover {
+  aspect-ratio: 3 / 4;
+  width: 100%;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 90%;
+}
+.skeleton-line-short {
+  width: 50%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 56px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state h3 {
+  color: var(--text);
+  font-size: 1.05rem;
+  margin: 4px 0 0;
+}
+
+.empty-state p {
+  max-width: 360px;
+  font-size: 0.88rem;
+  margin: 0 0 8px;
+}
+
+.error-state svg {
+  color: #f87171;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--surface-3);
+  color: var(--text-muted);
+}
+
+.badge-accent {
+  background: rgba(124, 92, 255, 0.16);
+  color: var(--accent-light);
+}
+
+.badge-gold {
+  background: rgba(250, 204, 21, 0.14);
+  color: var(--accent-gold);
+}
+
+.user-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+}

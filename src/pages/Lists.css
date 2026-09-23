@@ -1,0 +1,113 @@
+.lists-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.lists-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.lists-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.lists-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.lists-filters button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 7px 14px;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lists-filters button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.list-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.list-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.list-card-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: 70px;
+  background: var(--surface-2);
+}
+.list-card-thumb-slot {
+  background: var(--surface-3);
+  border-right: 1px solid var(--surface);
+}
+.list-card-thumb-empty {
+  grid-column: span 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.list-card-body {
+  padding: 14px 16px;
+}
+
+.list-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.list-card-title-row h3 {
+  font-size: 0.96rem;
+  margin: 0;
+}
+.list-card-title-row svg {
+  color: var(--accent-light);
+  flex-shrink: 0;
+}
+
+.list-card-body p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 6px 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
