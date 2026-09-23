@@ -1,0 +1,77 @@
+.home-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+.home-page h1 {
+  font-size: 1.4rem;
+  margin: 0 0 26px;
+}
+
+.home-section {
+  margin-bottom: 34px;
+}
+.home-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.home-section-header h3 {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+.home-section-header a {
+  font-size: 0.8rem;
+  color: var(--accent-light);
+  text-decoration: none;
+}
+
+.home-lists-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.home-list-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--text);
+  min-width: 180px;
+}
+.home-list-chip:hover {
+  border-color: var(--accent);
+}
+.home-list-chip strong {
+  display: block;
+  font-size: 0.86rem;
+}
+.home-list-chip span {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.home-empty-text {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.home-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.home-activity-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}

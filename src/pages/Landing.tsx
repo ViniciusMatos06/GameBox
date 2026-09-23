@@ -79,10 +79,6 @@ export default function Landing() {
           <GameGrid games={games} loading={loading} skeletonCount={10} />
         )}
       </section>
-
-      <footer className="landing-footer">
-        <span>Game data provided by <a href="https://rawg.io" target="_blank" rel="noreferrer">RAWG</a></span>
-      </footer>
     </div>
   );
 }

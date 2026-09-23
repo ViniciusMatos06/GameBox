@@ -1,0 +1,64 @@
+.create-list-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+.create-list-page h1 {
+  font-size: 1.4rem;
+  margin: 0 0 22px;
+}
+
+.create-list-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 26px;
+}
+
+.create-list-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.create-list-types {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.create-list-type {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  color: var(--text);
+}
+.create-list-type svg {
+  color: var(--text-muted);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.create-list-type strong {
+  font-size: 0.9rem;
+}
+.create-list-type p {
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.create-list-type.active {
+  border-color: var(--accent);
+  background: rgba(124, 92, 255, 0.08);
+}
+.create-list-type.active svg {
+  color: var(--accent-light);
+}

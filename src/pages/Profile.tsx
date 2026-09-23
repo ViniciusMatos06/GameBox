@@ -1,352 +1,153 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  User as UserIcon,
-  Calendar,
-  Bookmark,
-  Star,
-  Plus,
-  Edit,
-  Sparkles,
-  Layers,
-  ArrowRight,
-} from 'lucide-react';
+import { Settings, Users2, User as UserIcon } from 'lucide-react';
+import { getPublicProfile, getProfileStats } from '../services/userService';
+import { getListsForUser } from '../services/listService';
+import { getUserActivities } from '../services/activityService';
+import { getUserRatingsAcrossLists } from '../services/ratingService';
+import { getGamesByIds, hasApiKey } from '../services/rawgApi';
+import type { RawgGameDetails } from '../types/rawg';
 import { useAuth } from '../context/AuthContext';
-import {
-  findUserByUsername,
-  getUserStats,
-  getUserLists,
-  getUserActivities,
-} from '../services/gameBoxService';
-import { User, GameList, UserActivity, GameReview } from '../types/gamebox';
-import { StarRating } from '../components/common/StarRating';
+import { UserAvatar, EmptyState, Badge } from '../components/common/States';
+import Button from '../components/common/Button';
+import './Profile.css';
 
-export const Profile: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
-  const { user: currentUser } = useAuth();
+export default function Profile() {
+  const { username } = useParams();
+  const { user } = useAuth();
+  const [gamesById, setGamesById] = useState<Record<number, RawgGameDetails>>({});
 
-  const [profileUser, setProfileUser] = useState<User | null>(null);
-  const [userLists, setUserLists] = useState<GameList[]>([]);
-  const [activities, setActivities] = useState<UserActivity[]>([]);
-  const [stats, setStats] = useState({
-    ratedGamesCount: 0,
-    createdListsCount: 0,
-    addedGamesCount: 0,
-    averageRating: 0,
-    recentReviews: [] as GameReview[],
-  });
-
-  const [activeTab, setActiveTab] = useState<'reviews' | 'lists' | 'activity'>('reviews');
+  const profile = username ? getPublicProfile(username) : undefined;
+  const stats = username ? getProfileStats(username) : null;
+  const lists = username ? getListsForUser(username).filter((l) => l.type === 'personal' ? l.ownerUsername === username : true) : [];
+  const activities = username ? getUserActivities(username).slice(0, 8) : [];
+  const recentRatings = username ? getUserRatingsAcrossLists(username).slice(-8).reverse() : [];
 
   useEffect(() => {
-    if (username) {
-      const found = findUserByUsername(username);
-      if (found) {
-        setProfileUser(found);
-        setStats(getUserStats(found.id));
-        setUserLists(getUserLists(found.id));
-        setActivities(getUserActivities(found.id));
-      }
-    }
-  }, [username, currentUser]);
+    if (!hasApiKey() || recentRatings.length === 0) return;
+    getGamesByIds(recentRatings.map((r) => r.gameId)).then(setGamesById);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
 
-  if (!profileUser) {
+  if (!profile || !stats) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="p-8 bg-[#121622] rounded-3xl border border-slate-800">
-          <UserIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-white mb-2">Perfil não encontrado</h2>
-          <p className="text-xs text-slate-400 mb-6">O usuário @{username} não existe.</p>
-          <Link
-            to="/"
-            className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold"
-          >
-            Voltar para o início
-          </Link>
-        </div>
+      <div className="profile-page">
+        <EmptyState title="Usuário não encontrado." />
       </div>
     );
   }
 
-  const isOwnProfile = currentUser?.id === profileUser.id;
+  const isOwnProfile = user?.username === profile.username;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Cabeçalho do Perfil (Avatar, Nome, Bio, Ações) */}
-      <div className="p-6 sm:p-8 bg-[#121622] rounded-3xl border border-slate-800 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-          <img
-            src={profileUser.avatar}
-            alt={profileUser.name}
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover border-2 border-emerald-500/40 shadow-xl"
-          />
-
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-black text-white">{profileUser.name}</h1>
-              <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                @{profileUser.username}
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-300 max-w-lg leading-relaxed">
-              {profileUser.bio || 'Membro do GameBox explorando universos de jogos.'}
-            </p>
-
-            <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-slate-400 pt-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
-              <span>Entrou em {new Date(profileUser.createdAt).toLocaleDateString('pt-BR')}</span>
-            </div>
-          </div>
+    <div className="profile-page">
+      <div className="profile-header">
+        <UserAvatar src={profile.avatarUrl} alt={profile.username} size={84} />
+        <div className="profile-header-info">
+          <h1>{profile.name}</h1>
+          <p className="profile-username">@{profile.username}</p>
+          {profile.bio && <p className="profile-bio">{profile.bio}</p>}
+          <p className="profile-joined">
+            Entrou em {new Date(profile.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+          </p>
         </div>
-
         {isOwnProfile && (
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              to="/profile/edit"
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 border border-slate-700/80"
-            >
-              <Edit className="w-3.5 h-3.5 text-emerald-400" /> Editar Perfil
-            </Link>
-          </div>
+          <Link to="/profile/edit">
+            <Button variant="secondary" icon={<Settings size={15} />}>
+              Editar perfil
+            </Button>
+          </Link>
         )}
       </div>
 
-      {/* Estatísticas do Perfil (Requisito 24) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-[#121622] rounded-2xl border border-slate-800 flex flex-col justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Jogos Avaliados</span>
-          <div className="text-2xl font-black text-white mt-1 flex items-center gap-1.5">
-            <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-            <span>{stats.ratedGamesCount}</span>
-          </div>
+      <div className="profile-stats">
+        <div className="profile-stat">
+          <strong>{stats.gamesRated}</strong>
+          <span>jogos avaliados</span>
         </div>
-
-        <div className="p-4 bg-[#121622] rounded-2xl border border-slate-800 flex flex-col justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Listas Criadas</span>
-          <div className="text-2xl font-black text-white mt-1 flex items-center gap-1.5">
-            <Bookmark className="w-5 h-5 text-emerald-400" />
-            <span>{stats.createdListsCount}</span>
-          </div>
+        <div className="profile-stat">
+          <strong>{stats.listsCreated}</strong>
+          <span>listas criadas</span>
         </div>
-
-        <div className="p-4 bg-[#121622] rounded-2xl border border-slate-800 flex flex-col justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Jogos Adicionados</span>
-          <div className="text-2xl font-black text-white mt-1 flex items-center gap-1.5">
-            <Layers className="w-5 h-5 text-cyan-400" />
-            <span>{stats.addedGamesCount}</span>
-          </div>
+        <div className="profile-stat">
+          <strong>{stats.gamesAdded}</strong>
+          <span>jogos adicionados</span>
         </div>
-
-        <div className="p-4 bg-[#121622] rounded-2xl border border-slate-800 flex flex-col justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Média das Avaliações</span>
-          <div className="text-2xl font-black text-amber-400 mt-1 flex items-center gap-1 font-mono">
-            <span>{stats.averageRating > 0 ? `${stats.averageRating} ★` : '-'}</span>
-          </div>
+        <div className="profile-stat">
+          <strong>{stats.avgRating > 0 ? stats.avgRating.toFixed(1) : '—'}</strong>
+          <span>média das avaliações</span>
         </div>
       </div>
 
-      {/* Tabs de Conteúdo: Avaliações Recentes, Listas, Atividade */}
-      <div>
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <button
-            onClick={() => setActiveTab('reviews')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTab === 'reviews'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-            }`}
-          >
-            <Star className="w-3.5 h-3.5 fill-amber-400" />
-            Jogos Avaliados ({stats.recentReviews.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('lists')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTab === 'lists'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-            }`}
-          >
-            <Bookmark className="w-3.5 h-3.5" />
-            Listas ({userLists.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('activity')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTab === 'activity'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Atividades ({activities.length})
-          </button>
-        </div>
-
-        {/* Tab 1: Avaliações Recentes */}
-        {activeTab === 'reviews' && (
-          <div className="pt-6">
-            {stats.recentReviews.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {stats.recentReviews.map((rev) => (
-                  <Link
-                    key={rev.id}
-                    to={`/games/${rev.rawgGameId}`}
-                    className="group bg-[#121622] rounded-2xl overflow-hidden border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl"
-                  >
-                    <div className="aspect-[16/10] bg-slate-900 overflow-hidden relative">
-                      <img
-                        src={
-                          rev.gameCover ||
-                          'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80'
-                        }
-                        alt={rev.gameTitle}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-lg flex items-center gap-1 text-xs font-bold text-amber-300 border border-slate-700">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        {rev.rating} ★
-                      </div>
-                    </div>
-
-                    <div className="p-4 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h4 className="font-bold text-sm text-white group-hover:text-emerald-400 transition truncate">
-                          {rev.gameTitle}
-                        </h4>
-                        <span className="text-[11px] text-slate-500 block mt-0.5">
-                          Avaliado em {new Date(rev.createdAt).toLocaleDateString('pt-BR')}
-                        </span>
-                      </div>
-
-                      {rev.comment && (
-                        <p className="text-xs text-slate-400 italic line-clamp-2 mt-2 pt-2 border-t border-slate-800/80">
-                          "{rev.comment}"
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center text-slate-500 text-xs">
-                Nenhum jogo avaliado ainda por este usuário.
-              </div>
-            )}
+      <section className="profile-section">
+        <h3>Listas</h3>
+        {lists.length === 0 ? (
+          <p className="profile-empty-text">Nenhuma lista ainda.</p>
+        ) : (
+          <div className="profile-lists">
+            {lists.map((l) => (
+              <Link to={`/lists/${l.id}`} key={l.id} className="profile-list-chip">
+                {l.type === 'group' ? <Users2 size={13} /> : <UserIcon size={13} />}
+                {l.name}
+                <Badge>{l.games.length}</Badge>
+              </Link>
+            ))}
           </div>
         )}
+      </section>
 
-        {/* Tab 2: Listas do Usuário */}
-        {activeTab === 'lists' && (
-          <div className="pt-6">
-            {userLists.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userLists.map((list) => (
-                  <Link
-                    key={list.id}
-                    to={`/lists/${list.id}`}
-                    className="p-5 bg-[#121622] rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col justify-between group"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span
-                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                            list.type === 'group'
-                              ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
-                              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          }`}
-                        >
-                          {list.type === 'group' ? 'Lista de Grupo' : 'Lista Pessoal'}
-                        </span>
-                        <span className="text-xs text-slate-400">{list.games.length} jogos</span>
-                      </div>
-                      <h4 className="text-base font-bold text-white group-hover:text-emerald-400 transition">
-                        {list.name}
-                      </h4>
-                      <p className="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">
-                        {list.description || 'Sem descrição.'}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-slate-800 flex -space-x-2">
-                      {list.games.slice(0, 4).map((g, idx) => (
-                        <img
-                          key={idx}
-                          src={
-                            g.coverUrl ||
-                            'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=80&auto=format&fit=crop&q=80'
-                          }
-                          alt=""
-                          className="w-8 h-8 rounded-lg object-cover border border-[#121622]"
-                        />
-                      ))}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 text-center text-slate-500 text-xs">
-                Nenhuma lista criada por este usuário ainda.
-              </div>
-            )}
+      <section className="profile-section">
+        <h3>Jogos avaliados recentemente</h3>
+        {recentRatings.length === 0 ? (
+          <p className="profile-empty-text">Nenhuma avaliação ainda.</p>
+        ) : (
+          <div className="profile-recent-games">
+            {recentRatings.map((r) => {
+              const game = gamesById[r.gameId];
+              return (
+                <Link to={`/games/${r.gameId}`} key={r.id} className="profile-recent-game">
+                  {game?.background_image ? (
+                    <img src={game.background_image} alt={game.name} />
+                  ) : (
+                    <div className="profile-recent-placeholder" />
+                  )}
+                  <span className="profile-recent-stars">{'★'.repeat(r.stars)}</span>
+                </Link>
+              );
+            })}
           </div>
         )}
+      </section>
 
-        {/* Tab 3: Feed de Atividades Recentes (Requisito 24) */}
-        {activeTab === 'activity' && (
-          <div className="pt-6 max-w-2xl">
-            {activities.length > 0 ? (
-              <div className="p-4 bg-[#121622] rounded-2xl border border-slate-800 space-y-4">
-                {activities.map((act) => (
-                  <div key={act.id} className="flex items-start gap-3 text-xs pb-3 border-b border-slate-800/80 last:border-0 last:pb-0">
-                    <img
-                      src={profileUser.avatar}
-                      alt={profileUser.username}
-                      className="w-8 h-8 rounded-full object-cover shrink-0 mt-0.5"
-                    />
-                    <div className="flex-1 leading-relaxed">
-                      <span className="font-bold text-white">@{profileUser.username}</span>{' '}
-                      {act.type === 'rated' && (
-                        <span>
-                          avaliou <strong className="text-emerald-300">{act.gameTitle}</strong> com{' '}
-                          <span className="text-amber-400 font-semibold">{act.rating} ★</span>
-                        </span>
-                      )}
-                      {act.type === 'added_to_list' && (
-                        <span>
-                          adicionou <strong className="text-cyan-300">{act.gameTitle}</strong> à lista{' '}
-                          <strong className="text-slate-200">{act.listName}</strong>
-                        </span>
-                      )}
-                      {act.type === 'created_list' && (
-                        <span>
-                          criou uma nova lista: <strong className="text-emerald-300">{act.listName}</strong>
-                        </span>
-                      )}
-                      {act.type === 'joined_group' && (
-                        <span>
-                          entrou para o grupo <strong className="text-cyan-300">{act.listName}</strong>
-                        </span>
-                      )}
-                      <span className="text-[10px] text-slate-500 block mt-1">
-                        {new Date(act.timestamp).toLocaleDateString('pt-BR')} às{' '}
-                        {new Date(act.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+      <section className="profile-section">
+        <h3>Atividade</h3>
+        {activities.length === 0 ? (
+          <p className="profile-empty-text">Nenhuma atividade ainda.</p>
+        ) : (
+          <div className="profile-activity-list">
+            {activities.map((a) => (
+              <div key={a.id} className="profile-activity-item">
+                {describeActivity(a, profile.username)}
               </div>
-            ) : (
-              <div className="py-12 text-center text-slate-500 text-xs">
-                Nenhuma atividade recente registrada.
-              </div>
-            )}
+            ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
-};
+}
+
+function describeActivity(a: ReturnType<typeof getUserActivities>[number], username: string): string {
+  switch (a.type) {
+    case 'rated_game':
+      return `avaliou ${a.gameName ?? 'um jogo'} com ${'★'.repeat(a.stars ?? 0)}`;
+    case 'added_game':
+      return `adicionou ${a.gameName ?? 'um jogo'} à lista ${a.listName ?? ''}`;
+    case 'joined_list':
+      return `entrou na lista ${a.listName ?? ''}`;
+    case 'created_list':
+      return `criou a lista ${a.listName ?? ''}`;
+    default:
+      return `${username} teve uma atividade`;
+  }
+}
