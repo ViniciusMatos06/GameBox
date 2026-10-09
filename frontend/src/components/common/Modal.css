@@ -13,7 +13,7 @@
 .modal {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 4px;
   width: 100%;
   max-width: 460px;
   max-height: 86vh;
@@ -46,7 +46,7 @@
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
-  border-radius: 8px;
+  border-radius: 4px;
   display: inline-flex;
 }
 .modal-close:hover {

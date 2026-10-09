@@ -2,9 +2,11 @@ import type { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { ChatProvider } from './context/ChatContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import FloatingChatWidget from './components/chat/FloatingChatWidget';
 
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -14,6 +16,7 @@ import Home from './pages/Home';
 import Explore from './pages/Explore';
 import GameDetails from './pages/GameDetails';
 import Lists from './pages/Lists';
+import People from './pages/People';
 import CreateList from './pages/CreateList';
 import ListDetail from './pages/ListDetail';
 import Profile from './pages/Profile';
@@ -40,6 +43,7 @@ function AppRoutes() {
       <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
       <Route path="/games/:id" element={<GameDetails />} />
 
+      <Route path="/people" element={<ProtectedRoute><People /></ProtectedRoute>} />
       <Route path="/lists" element={<ProtectedRoute><Lists /></ProtectedRoute>} />
       <Route path="/lists/create" element={<ProtectedRoute><CreateList /></ProtectedRoute>} />
       <Route path="/lists/:id" element={<ProtectedRoute><ListDetail /></ProtectedRoute>} />
@@ -61,9 +65,12 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <Navbar />
-          <AppRoutes />
-          <Footer />
+          <ChatProvider>
+            <Navbar />
+            <AppRoutes />
+            <Footer />
+            <FloatingChatWidget />
+          </ChatProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

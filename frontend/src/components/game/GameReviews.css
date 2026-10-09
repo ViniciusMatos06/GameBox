@@ -1,0 +1,32 @@
+.game-reviews { max-width: 1200px; margin: 60px auto 0; padding: 40px 24px 60px; border-top: 1px solid var(--border); }
+.game-reviews-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.game-reviews-header h2 { font-size: 3rem; margin-top: 6px; }
+.game-reviews-filter { display: flex; gap: 6px; }
+.game-reviews-filter button { background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; padding: 9px 16px; border-radius: 4px; cursor: pointer; }
+.game-reviews-filter button.active { background: var(--red); border-color: var(--red); color: #fff; }
+.game-reviews-form { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.game-reviews-form-label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+.game-reviews-form textarea { width: 100%; background: var(--bg-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; color: var(--text); font-family: var(--font-body); font-size: 0.88rem; resize: vertical; }
+.game-reviews-form textarea:focus { outline: none; border-color: var(--red); }
+.game-reviews-empty { color: var(--text-muted); font-size: 0.88rem; }
+.game-reviews-list { display: flex; flex-direction: column; gap: 12px; }
+.review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 20px 22px; }
+.review-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.review-card-meta { display: flex; flex-direction: column; }
+.review-card-name { font-weight: 700; font-size: 0.92rem; text-decoration: none; color: var(--text); }
+.review-card-name:hover { color: var(--red-bright); }
+.review-card-username { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+.review-card-time { margin-left: auto; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; }
+.review-card-text { font-size: 0.92rem; margin: 12px 0; line-height: 1.5; }
+.review-card-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: var(--red-bright); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; padding: 0; }
+.review-card-thread { margin-top: 16px; padding: 4px 0 0 18px; border-left: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 14px; }
+.review-comment { display: flex; gap: 10px; }
+.review-comment p { margin: 3px 0 0; font-size: 0.86rem; }
+.review-comment-author { font-weight: 700; font-size: 0.84rem; }
+.review-comment-username { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+.review-comment-time { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-dim); margin-left: 8px; text-transform: uppercase; }
+.review-reply-row { display: flex; gap: 8px; }
+.review-reply-row input { flex: 1; background: var(--bg-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; color: var(--text); font-size: 0.84rem; font-family: var(--font-body); outline: none; }
+.review-reply-row input:focus { border-color: var(--red); }
+.review-reply-row button { background: var(--surface-3); border: 1px solid var(--border-light); color: var(--text); font-family: var(--font-body); font-size: 0.74rem; text-transform: uppercase; font-weight: 700; padding: 0 16px; border-radius: 4px; cursor: pointer; }
+.review-reply-row button:disabled { opacity: 0.4; cursor: not-allowed; }

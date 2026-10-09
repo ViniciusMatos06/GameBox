@@ -11,7 +11,7 @@
 .settings-section {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 18px 20px;
   margin-bottom: 16px;
 }

@@ -9,7 +9,11 @@ public record ProfileResponse(
         String bio,
         String avatarUrl,
         Instant createdAt,
-        Stats stats
+        Stats stats,
+        long followersCount,
+        long followingCount,
+        /** Only meaningful when the request is authenticated and isn't the profile owner themself. */
+        boolean isFollowing
 ) {
     public record Stats(
             long listsCreated,

@@ -7,7 +7,7 @@
 .gd-hero-skeleton {
   height: 280px;
   margin: 20px;
-  border-radius: 16px;
+  border-radius: 4px;
 }
 
 .gd-hero {
@@ -35,8 +35,8 @@
 }
 
 .gd-main h1 {
-  font-size: 1.8rem;
-  margin: 0 0 10px;
+  font-size: 3.2rem;
+  margin: 0 0 14px;
 }
 
 .gd-meta-row {
@@ -59,7 +59,7 @@
 .gd-rating-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 12px 18px;
   display: flex;
   flex-direction: column;
@@ -120,14 +120,14 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid var(--border);
 }
 
 .gd-sidebar-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 4px;
   padding: 18px;
   margin-bottom: 16px;
 }
@@ -171,7 +171,7 @@
   text-align: left;
   background: var(--surface-3);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 12px;
   cursor: pointer;
   color: var(--text);

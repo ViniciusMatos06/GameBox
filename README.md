@@ -36,6 +36,17 @@ PostgreSQL, tudo sobe junto com **um único comando** via Docker Compose.
    (os dados do banco continuam salvos; `docker compose down -v` apaga tudo
    também, incluindo o banco, se você quiser começar do zero).
 
+## Novidades: pessoas, seguir e chat
+
+- Busca de pessoas (por username ou nome)
+- Seguir / deixar de seguir, com contadores de seguidores/seguindo clicáveis no perfil
+- Botão "Mensagem" no perfil de qualquer pessoa
+- Ícone de chat flutuante, visível em todas as páginas (quando logado), com badge de
+  não lidas. Dentro dele dá pra ver conversas em andamento ou pesquisar alguém pra
+  começar uma nova
+- O chat atualiza por polling (a cada ~3-8s), não é WebSocket — ou seja, não é
+  instantâneo no milissegundo, mas funciona bem pra uso normal
+
 ## O que cada serviço é
 
 | Serviço | Porta no seu computador | O que é |

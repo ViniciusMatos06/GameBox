@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Users2, User as UserIcon } from 'lucide-react';
+import { ArrowRight, Plus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getMyLists } from '../services/listService';
-import { getPopularGames, getUpcomingGames } from '../services/rawgApi';
+import { getPopularGames, getUpcomingGames, getGamesByIds } from '../services/rawgApi';
 import { getUserActivities } from '../services/activityService';
-import type { RawgGame } from '../types/rawg';
+import type { RawgGame, RawgGameDetails } from '../types/rawg';
 import type { Activity, GameList } from '../types/gamebox';
 import GameGrid from '../components/game/GameGrid';
-import { EmptyState } from '../components/common/States';
-import Button from '../components/common/Button';
 import './Home.css';
 
 export default function Home() {
@@ -18,105 +16,106 @@ export default function Home() {
   const [upcoming, setUpcoming] = useState<RawgGame[]>([]);
   const [lists, setLists] = useState<GameList[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [covers, setCovers] = useState<Record<number, RawgGameDetails>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
-    getMyLists().then((l) => setLists(l.slice(0, 4))).catch(() => {});
-    getUserActivities(user.username).then((a) => setActivities(a.slice(0, 5))).catch(() => {});
+    getMyLists().then((l) => {
+      setLists(l);
+      const ids = l[0]?.games.slice(0, 3).map((g) => g.gameId) ?? [];
+      if (ids.length) getGamesByIds(ids).then(setCovers);
+    }).catch(() => {});
+    getUserActivities(user.username).then(setActivities).catch(() => {});
   }, [user]);
 
   useEffect(() => {
-    setLoading(true);
     Promise.all([getPopularGames(), getUpcomingGames()])
-      .then(([p, u]) => {
-        setPopular(p.results.slice(0, 6));
-        setUpcoming(u.results.slice(0, 6));
-      })
+      .then(([p, u]) => { setPopular(p.results); setUpcoming(u.results); })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
+  const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '').toUpperCase();
+  const savedGames = lists.reduce((n, l) => n + l.games.length, 0);
+  const rated = activities.filter((a) => a.type === 'rated_game').length;
+  const featured = popular[0];
+  const ranking = popular.slice(0, 6);
+  const mostSearched = popular.slice(6, 12);
+  const firstList = lists[0];
+
   return (
     <div className="home-page">
-      <h1>Olá, {user?.name.split(' ')[0]} 👋</h1>
-
-      <section className="home-section">
-        <div className="home-section-header">
-          <h3>Suas listas</h3>
-          <Link to="/lists">Ver todas</Link>
+      <header className="home-hero">
+        <div>
+          <span className="eyebrow">{today} — Início</span>
+          <h1>Olá,<span>{user?.name.split(' ')[0]}</span></h1>
         </div>
-        {lists.length === 0 ? (
-          <EmptyState
-            title="Você ainda não tem listas."
-            description="Crie uma lista pessoal ou de grupo para começar."
-            action={
-              <Link to="/lists/create">
-                <Button icon={<Plus size={16} />}>Criar lista</Button>
-              </Link>
-            }
-          />
-        ) : (
-          <div className="home-lists-row">
-            {lists.map((l) => (
-              <Link to={`/lists/${l.id}`} key={l.id} className="home-list-chip">
-                {l.type === 'group' ? <Users2 size={14} /> : <UserIcon size={14} />}
-                <div>
-                  <strong>{l.name}</strong>
-                  <span>{l.games.length} jogos</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+        <div className="home-stats">
+          <div><strong>{lists.length}</strong><small>Listas</small></div>
+          <div><strong>{savedGames}</strong><small>Jogos salvos</small></div>
+          <div><strong>{rated}</strong><small>Avaliados</small></div>
+        </div>
+      </header>
+
+      <div className="home-top">
+        {featured && (
+          <Link to={`/games/${featured.id}`} className="home-featured" style={featured.background_image ? { backgroundImage: `linear-gradient(180deg, rgba(12,12,12,0.15), rgba(12,12,12,0.95)), url(${featured.background_image})` } : undefined}>
+            <span className="home-featured-tag">Em destaque</span>
+            <h2 className="display-heading">{featured.name}</h2>
+            <div className="home-featured-meta">
+              <b>★ {featured.rating.toFixed(1)}</b>
+              <span>{featured.released ? new Date(featured.released).getFullYear() : ''}</span>
+              <span>{featured.genres?.[0]?.name}</span>
+            </div>
+            <span className="home-featured-btn">Ver jogo <ArrowRight size={15} /></span>
+          </Link>
         )}
-      </section>
+        <aside className="home-ranking">
+          <header><h3 className="display-heading">Jogos populares</h3><Link to="/explore">Explorar →</Link></header>
+          {ranking.map((g, i) => (
+            <Link to={`/games/${g.id}`} key={g.id} className="home-rank-row">
+              <b className={i === 0 ? 'first' : ''}>{String(i + 1).padStart(2, '0')}</b>
+              <div><strong>{g.name}</strong><small>{g.released ? new Date(g.released).getFullYear() : ''} · {g.genres?.[0]?.name}</small></div>
+              <em>★ {g.rating.toFixed(1)}</em>
+            </Link>
+          ))}
+        </aside>
+      </div>
 
       <section className="home-section">
-        <div className="home-section-header">
-          <h3>Jogos populares</h3>
-          <Link to="/explore">Explorar</Link>
-        </div>
-        <GameGrid games={popular} loading={loading} skeletonCount={6} />
+        <header><h2 className="display-heading">Próximos lançamentos</h2><Link to="/explore">Explorar →</Link></header>
+        <GameGrid games={upcoming.slice(0, 6)} loading={loading} skeletonCount={6} />
       </section>
 
-      <section className="home-section">
-        <div className="home-section-header">
-          <h3>Próximos lançamentos</h3>
-          <Link to="/explore">Explorar</Link>
-        </div>
-        <GameGrid games={upcoming} loading={loading} skeletonCount={6} />
-      </section>
+      {mostSearched.length > 0 && (
+        <section className="home-section">
+          <header><h2 className="display-heading">Os mais buscados</h2><Link to="/explore">Explorar →</Link></header>
+          <GameGrid games={mostSearched} loading={false} />
+        </section>
+      )}
 
-      <section className="home-section">
-        <div className="home-section-header">
-          <h3>Atividade recente</h3>
-        </div>
-        {activities.length === 0 ? (
-          <p className="home-empty-text">Sua atividade vai aparecer aqui conforme você usa o GameBox.</p>
+      <section className="home-list-strip">
+        {firstList ? (
+          <>
+            <div className="home-strip-covers">
+              {firstList.games.slice(0, 3).map((g) => covers[g.gameId]?.background_image
+                ? <img key={g.gameId} src={covers[g.gameId].background_image as string} alt="" /> : <i key={g.gameId} />)}
+            </div>
+            <div>
+              <span className="eyebrow">Suas listas</span>
+              <h2 className="display-heading">{firstList.name}</h2>
+              <small>{firstList.games.length} jogos · {firstList.type === 'group' ? 'Grupo' : 'Pessoal'}</small>
+            </div>
+            <Link to="/lists" className="btn btn-secondary">Ver todas <ArrowRight size={15} /></Link>
+          </>
         ) : (
-          <div className="home-activity-list">
-            {activities.map((a) => (
-              <div key={a.id} className="home-activity-item">
-                {describeActivity(a)}
-              </div>
-            ))}
-          </div>
+          <>
+            <div><span className="eyebrow">Suas listas</span><h2 className="display-heading">Crie sua primeira lista</h2></div>
+            <Link to="/lists/create" className="btn btn-primary"><Plus size={15} /> Criar lista</Link>
+          </>
         )}
       </section>
     </div>
   );
-}
-
-function describeActivity(a: Activity): string {
-  switch (a.type) {
-    case 'rated_game':
-      return `Você avaliou ${a.gameName ?? 'um jogo'} com ${'★'.repeat(a.stars ?? 0)}`;
-    case 'added_game':
-      return `Você adicionou ${a.gameName ?? 'um jogo'} à lista ${a.listName ?? ''}`;
-    case 'joined_list':
-      return `Você entrou na lista ${a.listName ?? ''}`;
-    case 'created_list':
-      return `Você criou a lista ${a.listName ?? ''}`;
-    default:
-      return 'Atividade registrada';
-  }
 }

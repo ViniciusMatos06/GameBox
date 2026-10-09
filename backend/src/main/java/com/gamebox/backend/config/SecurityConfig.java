@@ -47,17 +47,26 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Auth endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-                        // RAWG proxy is public (no user data, just a passthrough)
                         .requestMatchers("/api/rawg/**").permitAll()
-                        // Public reads: profiles, list pages shared by link, invite previews, ratings of a game
+
+                        // Narrow auth-required rules FIRST: Spring Security uses the first matching
+                        // rule, and each of these would otherwise also match a broader "/*" permitAll below.
+                        .requestMatchers(HttpMethod.GET, "/api/users/search").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/users/suggestions").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/activities/feed").authenticated()
+
+                        // Public reads
                         .requestMatchers(HttpMethod.GET, "/api/users/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/*/followers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/*/following").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lists/invite/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lists/by-user/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lists/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lists/*/games/*/ratings").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/activities/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/games/*/reviews").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

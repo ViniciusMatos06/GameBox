@@ -1,0 +1,26 @@
+.people-page { max-width: 1200px; margin: 0 auto; padding: 32px 24px 60px; }
+.people-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+.people-header h1 { font-size: 4rem; margin-top: 6px; }
+.people-search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border-light); border-radius: 4px; padding: 11px 14px; color: var(--text-muted); min-width: 340px; }
+.people-search input { background: none; border: none; outline: none; color: var(--text); flex: 1; font-size: 0.88rem; font-family: var(--font-body); }
+.people-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 26px; }
+.people-tabs button { background: none; border: none; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; padding: 12px 16px; cursor: pointer; position: relative; }
+.people-tabs button:hover, .people-tabs button.active { color: var(--text); }
+.people-tabs button.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--red); }
+.people-layout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
+.people-list-title { font-family: var(--font-body); font-size: 0.92rem; font-weight: 600; color: var(--text-muted); margin: 0 0 14px; }
+.people-col { display: flex; flex-direction: column; gap: 6px; }
+.people-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); }
+.people-row-info { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); min-width: 0; }
+.people-row-info strong { display: block; font-size: 0.86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.people-row-info span { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+.people-follow-btn { background: transparent; border: 1px solid var(--red); color: var(--red-bright); font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 7px 12px; border-radius: 3px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.people-follow-btn:hover { background: var(--red); color: #fff; }
+.people-following-tag { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+.people-feed-item { display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.people-feed-body p { margin: 0 0 6px; font-size: 0.9rem; color: var(--text-muted); }
+.people-feed-author { color: var(--text); font-weight: 700; text-decoration: none; }
+.people-feed-author:hover { color: var(--red-bright); }
+.people-feed-time { display: block; margin-top: 6px; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+.people-empty { font-size: 0.84rem; color: var(--text-muted); }
+@media (max-width: 900px) { .people-layout { grid-template-columns: 1fr; } .people-search { min-width: 0; width: 100%; } .people-header h1 { font-size: 3rem; } }

@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getMyLists, addGameToList } from '../services/listService';
 import type { GameList } from '../types/gamebox';
+import GameReviews from '../components/game/GameReviews';
 import './GameDetails.css';
 
 export default function GameDetails() {
@@ -193,6 +194,8 @@ export default function GameDetails() {
           )}
         </Modal>
       )}
+
+      <GameReviews gameId={game.id} gameName={game.name} />
     </div>
   );
 }

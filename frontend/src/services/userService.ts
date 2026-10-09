@@ -1,9 +1,14 @@
-import type { PublicProfile, User } from '../types/gamebox';
+import type { PublicProfile, User, UserSummary } from '../types/gamebox';
 import { api } from './apiClient';
 import { updateCachedUser } from './authService';
 
 export async function getPublicProfile(username: string): Promise<PublicProfile> {
   return api.get<PublicProfile>(`/users/${username}`);
+}
+
+export async function searchUsers(query: string): Promise<UserSummary[]> {
+  if (!query.trim()) return [];
+  return api.get<UserSummary[]>(`/users/search?q=${encodeURIComponent(query.trim())}`);
 }
 
 export async function updateProfile(patch: {

@@ -26,6 +26,15 @@ export interface PublicProfile {
   avatarUrl: string;
   createdAt: string;
   stats: ProfileStats;
+  followersCount: number;
+  followingCount: number;
+  isFollowing: boolean;
+}
+
+export interface UserSummary {
+  username: string;
+  name: string;
+  avatarUrl: string;
 }
 
 export type ListType = 'personal' | 'group';
@@ -85,4 +94,8 @@ export interface Activity {
   gameName?: string;
   stars?: number;
   createdAt: string;
+}
+
+export interface FeedActivity extends Activity {
+  author: UserSummary;
 }
