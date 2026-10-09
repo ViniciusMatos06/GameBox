@@ -2,7 +2,17 @@
 // automatically and normalizes error handling so every service can just
 // `await api.get(...)` / `await api.post(...)` and catch a plain Error.
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:8080/api';
+
+const configuredBaseUrl =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  'http://localhost:8080/api';
+
+const normalizedBaseUrl = configuredBaseUrl.replace(/\/+$/, '');
+
+const BASE_URL = normalizedBaseUrl.endsWith('/api')
+  ? normalizedBaseUrl
+  : `${normalizedBaseUrl}/api`;
+
 
 const TOKEN_KEY = 'gamebox:token';
 
